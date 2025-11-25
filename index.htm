@@ -1,1 +1,479 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>MiniCinema — простий кіно-сайт</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Якщо захочеш favicon:
+  <link rel="icon" type="image/png" href="favicon.png">
+  -->
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #050510;
+      color: #f5f5f5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* HEADER */
+    header {
+      background-color: #050515;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 16px;
+    }
+
+    .header-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 1.3rem;
+      color: #ff4757;
+    }
+
+    .search-wrapper {
+      margin-left: auto;
+      max-width: 260px;
+      width: 100%;
+      position: relative;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      padding: 7px 28px 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: #0e0e23;
+      color: #f5f5f5;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .search-wrapper span {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #bbbbbb;
+      margin-bottom: 16px;
+    }
+
+    .movie-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 14px;
+    }
+
+    .movie-card {
+      background: #0e0e23;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.7);
+      background: #141435;
+    }
+
+    .movie-poster {
+      width: 100%;
+      height: 210px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .movie-poster::after {
+      content: "▶";
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.7);
+      font-size: 0.8rem;
+    }
+
+    .movie-body {
+      padding: 8px 9px 10px;
+    }
+
+    .movie-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .movie-meta {
+      font-size: 0.8rem;
+      color: #bbbbbb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+      z-index: 10;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 800px;
+      background: #050510;
+      border-radius: 12px;
+      padding: 10px 10px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 0 6px;
+    }
+
+    .modal-info {
+      font-size: 0.85rem;
+      color: #bbbbbb;
+      margin-bottom: 6px;
+    }
+
+    .modal-desc {
+      font-size: 0.9rem;
+      color: #dddddd;
+      margin-bottom: 8px;
+    }
+
+    .modal-video {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #000;
+    }
+
+    .modal-video iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 0.8rem;
+      color: #888888;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      margin-top: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .header-inner {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .search-wrapper {
+        max-width: 100%;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">MiniCinema</div>
+
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" placeholder="Пошук фільму..." />
+        <span>🔍</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <h1>Онлайн-кінотеатр (демо)</h1>
+    <div class="subtitle">
+      Натисни на фільм, щоб подивитися опис і трейлер. У коді можна замінити
+      дані на свої.
+    </div>
+
+    <div class="movie-grid" id="movieGrid">
+      <!-- Картки будуть додані скриптом -->
+    </div>
+  </main>
+
+  <footer>
+    Demo &copy; 2025 MiniCinema. Усі фільми тут — просто приклад.
+  </footer>
+
+  <!-- МОДАЛЬНЕ ВІКНО -->
+  <div class="modal" id="movieModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Назва фільму</div>
+        <div class="modal-close" id="modalClose">&times;</div>
+      </div>
+      <div class="modal-info" id="modalInfo"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-video" id="modalVideo">
+        <!-- iframe з трейлером -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== ДАНІ ПРО ФІЛЬМИ (можеш змінити під себе) =====
+    var movies = [
+      {
+        id: "matrix",
+        title: "Матриця",
+        year: 1999,
+        genre: "Sci-Fi, Бойовик",
+        quality: "HD",
+        rating: "8.7 / 10",
+        duration: "2 год 16 хв",
+        poster: "https://images.pexels.com/photos/799137/pexels-photo-799137.jpeg?auto=compress&cs=tinysrgb&w=600",
+        description: "Хакер Нео дізнається, що реальність — це симуляція, а людство поневолене машинами.",
+        trailer: "https://www.youtube.com/embed/vKQi3bBA1y8"
+      },
+      {
+        id: "inception",
+        title: "Початок",
+        year: 2010,
+        genre: "Sci-Fi, Бойовик",
+        quality: "FullHD",
+        rating: "8.8 / 10",
+        duration: "2 год 28 хв",
+        poster: "https://images.pexels.com/photos/799158/pexels-photo-799158.jpeg?auto=compress&cs=tinysrgb&w=600",
+        description: "Крадій, який проникає у сни людей, отримує завдання — посадити ідею в голову цілі.",
+        trailer: "https://www.youtube.com/embed/YoHD9XEInc0"
+      },
+      {
+        id: "interstellar",
+        title: "Інтерстеллар",
+        year: 2014,
+        genre: "Sci-Fi, Драма",
+        quality: "HD",
+        rating: "8.6 / 10",
+        duration: "2 год 49 хв",
+        poster: "https://images.pexels.com/photos/799443/pexels-photo-799443.jpeg?auto=compress&cs=tinysrgb&w=600",
+        description: "Астронавти вирушають через кротову нору, щоб знайти новий дім для людства.",
+        trailer: "https://www.youtube.com/embed/zSWdZVtXT7E"
+      },
+      {
+        id: "avatar",
+        title: "Аватар",
+        year: 2009,
+        genre: "Фентезі, Бойовик",
+        quality: "HD",
+        rating: "7.8 / 10",
+        duration: "2 год 42 хв",
+        poster: "https://images.pexels.com/photos/799156/pexels-photo-799156.jpeg?auto=compress&cs=tinysrgb&w=600",
+        description: "Колишній морпіх опиняється на Пандорі та стає частиною світу на'ві.",
+        trailer: "https://www.youtube.com/embed/5PSNL1qE6VY"
+      }
+    ];
+
+    var movieGrid = document.getElementById("movieGrid");
+    var searchInput = document.getElementById("searchInput");
+
+    var movieModal = document.getElementById("movieModal");
+    var modalTitle = document.getElementById("modalTitle");
+    var modalInfo = document.getElementById("modalInfo");
+    var modalDesc = document.getElementById("modalDesc");
+    var modalVideo = document.getElementById("modalVideo");
+    var modalClose = document.getElementById("modalClose");
+
+    // ===== СТВОРЕННЯ КАРТОК =====
+    function renderMovies(filterText) {
+      movieGrid.innerHTML = "";
+      var i;
+
+      for (i = 0; i < movies.length; i++) {
+        var m = movies[i];
+
+        if (filterText) {
+          var lowerTitle = m.title.toLowerCase();
+          var lowerFilter = filterText.toLowerCase();
+          if (lowerTitle.indexOf(lowerFilter) === -1) {
+            continue;
+          }
+        }
+
+        var card = document.createElement("article");
+        card.className = "movie-card";
+        card.setAttribute("data-id", m.id);
+
+        var posterDiv = document.createElement("div");
+        posterDiv.className = "movie-poster";
+        posterDiv.style.backgroundImage = "url('" + m.poster + "')";
+        card.appendChild(posterDiv);
+
+        var bodyDiv = document.createElement("div");
+        bodyDiv.className = "movie-body";
+
+        var titleDiv = document.createElement("div");
+        titleDiv.className = "movie-title";
+        titleDiv.appendChild(document.createTextNode(m.title));
+        bodyDiv.appendChild(titleDiv);
+
+        var metaDiv = document.createElement("div");
+        metaDiv.className = "movie-meta";
+
+        var leftSpan = document.createElement("span");
+        leftSpan.appendChild(document.createTextNode(m.year + " · " + m.genre));
+        metaDiv.appendChild(leftSpan);
+
+        var badgeSpan = document.createElement("span");
+        badgeSpan.className = "badge";
+        badgeSpan.appendChild(document.createTextNode(m.quality));
+        metaDiv.appendChild(badgeSpan);
+
+        bodyDiv.appendChild(metaDiv);
+        card.appendChild(bodyDiv);
+
+        // клік по картці → відкриваємо модалку
+        card.onclick = (function(movieId) {
+          return function () {
+            openModal(movieId);
+          };
+        })(m.id);
+
+        movieGrid.appendChild(card);
+      }
+    }
+
+    // ===== МОДАЛКА =====
+    function openModal(movieId) {
+      var i;
+      var m = null;
+      for (i = 0; i < movies.length; i++) {
+        if (movies[i].id === movieId) {
+          m = movies[i];
+          break;
+        }
+      }
+      if (!m) return;
+
+      modalTitle.innerHTML = "";
+      modalTitle.appendChild(document.createTextNode(m.title));
+
+      var infoText = m.year + " · " + m.duration + " · " + m.genre + " · Рейтинг: " + m.rating;
+      modalInfo.innerHTML = "";
+      modalInfo.appendChild(document.createTextNode(infoText));
+
+      modalDesc.innerHTML = "";
+      modalDesc.appendChild(document.createTextNode(m.description));
+
+      // Вставляємо iframe з трейлером
+      modalVideo.innerHTML = "";
+      if (m.trailer) {
+        var iframe = document.createElement("iframe");
+        iframe.src = m.trailer;
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allowFullscreen = true;
+        modalVideo.appendChild(iframe);
+      }
+
+      movieModal.className = "modal active";
+    }
+
+    function closeModal() {
+      movieModal.className = "modal";
+      modalVideo.innerHTML = ""; // щоб зупинити відтворення
+    }
+
+    modalClose.onclick = closeModal;
+    movieModal.onclick = function (e) {
+      if (e.target === movieModal) {
+        closeModal();
+      }
+    };
+
+    // ===== ПОШУК =====
+    searchInput.oninput = function () {
+      var text = searchInput.value;
+      renderMovies(text);
+    };
+
+    // Перший рендер
+    renderMovies("");
+  </script>
+</body>
+</html>
 
