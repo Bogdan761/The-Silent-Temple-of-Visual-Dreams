@@ -2,12 +2,8 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <title>MiniCinema — простий кіно-сайт</title>
+  <title>MiniCinema — фільми та YouTube пошук</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Якщо захочеш favicon:
-  <link rel="icon" type="image/png" href="favicon.png">
-  -->
 
   <style>
     * {
@@ -31,66 +27,130 @@
     header {
       background-color: #050515;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding: 10px 16px;
     }
 
     .header-inner {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 0 auto;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     .logo {
       font-weight: bold;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: #ff4757;
     }
 
-    .search-wrapper {
-      margin-left: auto;
-      max-width: 260px;
-      width: 100%;
-      position: relative;
+    .nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .search-wrapper input {
+    .nav-link {
+      font-size: 0.9rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      color: #cccccc;
+      border: 1px solid transparent;
+    }
+
+    .nav-link.active {
+      background-color: #ff4757;
+      color: #ffffff;
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .nav-link:not(.active):hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 1.7rem;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #bbbbbb;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      display: none;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    /* Головна */
+    .hero-box {
+      background: #0e0e23;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 16px;
+    }
+
+    .hero-video {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #000;
+      margin-top: 10px;
+    }
+
+    .hero-video iframe {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      padding: 7px 28px 7px 10px;
+      height: 100%;
+      border: none;
+    }
+
+    /* Фільми */
+    .search-local-wrapper {
+      margin-bottom: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 300px;
+      padding: 7px 10px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.2);
       background: #0e0e23;
       color: #f5f5f5;
       font-size: 0.9rem;
       outline: none;
-    }
-
-    .search-wrapper span {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.9rem;
-      opacity: 0.7;
-    }
-
-    /* MAIN */
-    main {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    h1 {
-      font-size: 1.6rem;
-      margin-bottom: 6px;
-    }
-
-    .subtitle {
-      font-size: 0.9rem;
-      color: #bbbbbb;
-      margin-bottom: 16px;
     }
 
     .movie-grid {
@@ -158,77 +218,121 @@
       background: rgba(255,255,255,0.12);
     }
 
-    /* MODAL */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      padding: 14px;
-      z-index: 10;
+    /* YouTube пошук */
+    .yt-search-box {
+      background: #0e0e23;
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 14px;
     }
 
-    .modal.active {
+    .yt-search-row {
       display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
     }
 
-    .modal-content {
-      width: 100%;
-      max-width: 800px;
-      background: #050510;
-      border-radius: 12px;
-      padding: 10px 10px 14px;
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-
-    .modal-title {
-      font-size: 1.1rem;
-      font-weight: bold;
-    }
-
-    .modal-close {
-      cursor: pointer;
-      font-size: 1.4rem;
-      line-height: 1;
-      padding: 0 6px;
-    }
-
-    .modal-info {
-      font-size: 0.85rem;
-      color: #bbbbbb;
-      margin-bottom: 6px;
-    }
-
-    .modal-desc {
+    .yt-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: #050515;
+      color: #f5f5f5;
       font-size: 0.9rem;
-      color: #dddddd;
-      margin-bottom: 8px;
+      outline: none;
     }
 
-    .modal-video {
+    .yt-btn {
+      border-radius: 999px;
+      padding: 7px 14px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: #ff4757;
+      color: #ffffff;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .yt-btn:hover {
+      background: #ff5b6b;
+      transform: translateY(-1px);
+    }
+
+    .yt-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .yt-card {
+      background: #0e0e23;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .yt-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.7);
+    }
+
+    .yt-thumb {
+      width: 100%;
+      height: 130px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .yt-body {
+      padding: 7px 8px 8px;
+      font-size: 0.85rem;
+    }
+
+    .yt-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .yt-channel {
+      color: #bbbbbb;
+      font-size: 0.8rem;
+    }
+
+    .yt-player {
+      margin-top: 10px;
+      border-radius: 10px;
+      overflow: hidden;
       position: relative;
       padding-bottom: 56.25%;
       height: 0;
-      overflow: hidden;
-      border-radius: 10px;
       background: #000;
     }
 
-    .modal-video iframe {
+    .yt-player iframe {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       border: none;
+    }
+
+    .yt-hint {
+      font-size: 0.8rem;
+      color: #bbbbbb;
+      margin-top: 6px;
+    }
+
+    .error-msg {
+      color: #ff9b9b;
+      font-size: 0.85rem;
+      margin-top: 4px;
     }
 
     footer {
@@ -242,12 +346,7 @@
 
     @media (max-width: 600px) {
       .header-inner {
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .search-wrapper {
-        max-width: 100%;
-        margin-left: 0;
+        justify-content: space-between;
       }
     }
   </style>
@@ -257,46 +356,129 @@
     <div class="header-inner">
       <div class="logo">MiniCinema</div>
 
-      <div class="search-wrapper">
-        <input type="text" id="searchInput" placeholder="Пошук фільму..." />
-        <span>🔍</span>
-      </div>
+      <nav class="nav">
+        <div class="nav-link active" data-tab="home">Головна</div>
+        <div class="nav-link" data-tab="movies">Фільми</div>
+        <div class="nav-link" data-tab="youtube">Пошук на YouTube</div>
+      </nav>
     </div>
   </header>
 
   <main>
-    <h1>Онлайн-кінотеатр (демо)</h1>
-    <div class="subtitle">
-      Натисни на фільм, щоб подивитися опис і трейлер. У коді можна замінити
-      дані на свої.
-    </div>
+    <!-- Вкладка ГОЛОВНА -->
+    <section class="tab active" id="tab-home">
+      <h1>Ласкаво просимо в MiniCinema</h1>
+      <p class="subtitle">
+        Це демо-сайт: простий каталог фільмів + вкладка з пошуком відео на YouTube.
+        Код можна змінювати під свої задачі.
+      </p>
 
-    <div class="movie-grid" id="movieGrid">
-      <!-- Картки будуть додані скриптом -->
-    </div>
+      <div class="hero-box">
+        <h2>Приклад вбудованого відео</h2>
+        <p class="subtitle">
+          Тут просто приклад трейлера. Можеш замінити <b>src</b> у iframe на будь-яке
+          інше відео з YouTube.
+        </p>
+        <div class="hero-video">
+          <iframe
+            src="https://www.youtube.com/embed/vKQi3bBA1y8"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- Вкладка ФІЛЬМИ -->
+    <section class="tab" id="tab-movies">
+      <h1>Каталог фільмів (локально)</h1>
+      <p class="subtitle">
+        Це статичний список фільмів, який зберігається в JavaScript-масиві <code>movies</code>.
+        Можеш змінювати / додавати свої.
+      </p>
+
+      <div class="search-local-wrapper">
+        <input type="text" id="localSearchInput" class="search-input" placeholder="Пошук по назві...">
+      </div>
+
+      <div class="movie-grid" id="movieGrid"></div>
+    </section>
+
+    <!-- Вкладка YOUTUBE -->
+    <section class="tab" id="tab-youtube">
+      <h1>Пошук на YouTube</h1>
+      <p class="subtitle">
+        Введи запит, натисни «Шукати» — будуть показані відео з YouTube.
+        Потрібен <b>YouTube API ключ</b>, див. пояснення нижче.
+      </p>
+
+      <div class="yt-search-box">
+        <h2>Пошук відео</h2>
+        <div class="yt-search-row">
+          <input type="text" id="ytQuery" class="yt-input" placeholder="Наприклад: trailer matrix українською">
+          <button id="ytSearchBtn" class="yt-btn">🔎 Шукати</button>
+        </div>
+        <div id="ytError" class="error-msg"></div>
+        <div class="yt-hint">
+          Щоб увімкнути пошук, у коді потрібно прописати свій ключ:
+          <code>var YT_API_KEY = "YOUR_API_KEY_HERE";</code>
+        </div>
+      </div>
+
+      <div class="yt-player" id="ytPlayer">
+        <!-- тут буде iframe з вибраним відео -->
+      </div>
+
+      <div class="yt-results" id="ytResults">
+        <!-- результати пошуку -->
+      </div>
+    </section>
   </main>
 
   <footer>
-    Demo &copy; 2025 MiniCinema. Усі фільми тут — просто приклад.
+    Demo &copy; 2025 MiniCinema · Локальні фільми + пошук по YouTube (через API).
   </footer>
 
-  <!-- МОДАЛЬНЕ ВІКНО -->
-  <div class="modal" id="movieModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title" id="modalTitle">Назва фільму</div>
-        <div class="modal-close" id="modalClose">&times;</div>
-      </div>
-      <div class="modal-info" id="modalInfo"></div>
-      <div class="modal-desc" id="modalDesc"></div>
-      <div class="modal-video" id="modalVideo">
-        <!-- iframe з трейлером -->
-      </div>
-    </div>
-  </div>
-
   <script>
-    // ===== ДАНІ ПРО ФІЛЬМИ (можеш змінити під себе) =====
+    // ====================== ТАБИ ==========================
+    var navLinks = document.querySelectorAll(".nav-link");
+    var tabs = {
+      home: document.getElementById("tab-home"),
+      movies: document.getElementById("tab-movies"),
+      youtube: document.getElementById("tab-youtube")
+    };
+
+    function showTab(tabName) {
+      var i;
+
+      for (i = 0; i < navLinks.length; i++) {
+        var link = navLinks[i];
+        if (link.getAttribute("data-tab") === tabName) {
+          link.classList.add("active");
+        } else {
+          link.classList.remove("active");
+        }
+      }
+
+      for (var key in tabs) {
+        if (tabs.hasOwnProperty(key)) {
+          if (key === tabName) {
+            tabs[key].classList.add("active");
+          } else {
+            tabs[key].classList.remove("active");
+          }
+        }
+      }
+    }
+
+    for (var i = 0; i < navLinks.length; i++) {
+      navLinks[i].onclick = function () {
+        var tabName = this.getAttribute("data-tab");
+        showTab(tabName);
+      };
+    }
+
+    // ================== ЛОКАЛЬНІ ФІЛЬМИ ===================
     var movies = [
       {
         id: "matrix",
@@ -349,16 +531,8 @@
     ];
 
     var movieGrid = document.getElementById("movieGrid");
-    var searchInput = document.getElementById("searchInput");
+    var localSearchInput = document.getElementById("localSearchInput");
 
-    var movieModal = document.getElementById("movieModal");
-    var modalTitle = document.getElementById("modalTitle");
-    var modalInfo = document.getElementById("modalInfo");
-    var modalDesc = document.getElementById("modalDesc");
-    var modalVideo = document.getElementById("modalVideo");
-    var modalClose = document.getElementById("modalClose");
-
-    // ===== СТВОРЕННЯ КАРТОК =====
     function renderMovies(filterText) {
       movieGrid.innerHTML = "";
       var i;
@@ -406,10 +580,18 @@
         bodyDiv.appendChild(metaDiv);
         card.appendChild(bodyDiv);
 
-        // клік по картці → відкриваємо модалку
         card.onclick = (function(movieId) {
           return function () {
-            openModal(movieId);
+            // по кліку просто відкриваємо трейлер у новій вкладці
+            var j;
+            for (j = 0; j < movies.length; j++) {
+              if (movies[j].id === movieId) {
+                if (movies[j].trailer) {
+                  window.open(movies[j].trailer, "_blank");
+                }
+                break;
+              }
+            }
           };
         })(m.id);
 
@@ -417,63 +599,139 @@
       }
     }
 
-    // ===== МОДАЛКА =====
-    function openModal(movieId) {
-      var i;
-      var m = null;
-      for (i = 0; i < movies.length; i++) {
-        if (movies[i].id === movieId) {
-          m = movies[i];
-          break;
-        }
-      }
-      if (!m) return;
-
-      modalTitle.innerHTML = "";
-      modalTitle.appendChild(document.createTextNode(m.title));
-
-      var infoText = m.year + " · " + m.duration + " · " + m.genre + " · Рейтинг: " + m.rating;
-      modalInfo.innerHTML = "";
-      modalInfo.appendChild(document.createTextNode(infoText));
-
-      modalDesc.innerHTML = "";
-      modalDesc.appendChild(document.createTextNode(m.description));
-
-      // Вставляємо iframe з трейлером
-      modalVideo.innerHTML = "";
-      if (m.trailer) {
-        var iframe = document.createElement("iframe");
-        iframe.src = m.trailer;
-        iframe.allow =
-          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        iframe.allowFullscreen = true;
-        modalVideo.appendChild(iframe);
-      }
-
-      movieModal.className = "modal active";
-    }
-
-    function closeModal() {
-      movieModal.className = "modal";
-      modalVideo.innerHTML = ""; // щоб зупинити відтворення
-    }
-
-    modalClose.onclick = closeModal;
-    movieModal.onclick = function (e) {
-      if (e.target === movieModal) {
-        closeModal();
-      }
+    localSearchInput.oninput = function () {
+      renderMovies(localSearchInput.value);
     };
 
-    // ===== ПОШУК =====
-    searchInput.oninput = function () {
-      var text = searchInput.value;
-      renderMovies(text);
-    };
-
-    // Перший рендер
     renderMovies("");
+
+    // ================== YOUTUBE ПОШУК =====================
+    // !!! СЮДИ ВСТАВ СВІЙ YOUTUBE API KEY !!!
+    // Отримати можна тут: https://console.cloud.google.com/apis/
+    var YT_API_KEY = "YOUR_API_KEY_HERE";
+    var YT_MAX_RESULTS = 8;
+
+    var ytQueryInput = document.getElementById("ytQuery");
+    var ytSearchBtn = document.getElementById("ytSearchBtn");
+    var ytResults = document.getElementById("ytResults");
+    var ytPlayer = document.getElementById("ytPlayer");
+    var ytError = document.getElementById("ytError");
+
+    function setPlayerVideo(videoId) {
+      ytPlayer.innerHTML = "";
+      if (!videoId) {
+        return;
+      }
+      var iframe = document.createElement("iframe");
+      iframe.src = "https://www.youtube.com/embed/" + videoId;
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      ytPlayer.appendChild(iframe);
+    }
+
+    function searchYouTube(query) {
+      ytError.innerHTML = "";
+      ytResults.innerHTML = "";
+      setPlayerVideo(null);
+
+      if (!YT_API_KEY || YT_API_KEY === "YOUR_API_KEY_HERE") {
+        ytError.innerHTML = "❗ Потрібно вказати свій YT API ключ у змінній YT_API_KEY.";
+        return;
+      }
+
+      if (!query) {
+        ytError.innerHTML = "Введи текст для пошуку.";
+        return;
+      }
+
+      var url =
+        "https://www.googleapis.com/youtube/v3/search" +
+        "?key=" + encodeURIComponent(YT_API_KEY) +
+        "&part=snippet" +
+        "&type=video" +
+        "&maxResults=" + YT_MAX_RESULTS +
+        "&q=" + encodeURIComponent(query);
+
+      fetch(url)
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("HTTP error " + response.status);
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          if (!data.items || data.items.length === 0) {
+            ytError.innerHTML = "Нічого не знайдено.";
+            return;
+          }
+          renderYouTubeResults(data.items);
+        })
+        .catch(function (error) {
+          ytError.innerHTML = "Помилка запиту: " + error.message;
+        });
+    }
+
+    function renderYouTubeResults(items) {
+      ytResults.innerHTML = "";
+      var i;
+
+      for (i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (!item.id || !item.id.videoId) {
+          continue;
+        }
+        var videoId = item.id.videoId;
+        var title = item.snippet.title;
+        var channel = item.snippet.channelTitle;
+        var thumbUrl = item.snippet.thumbnails && item.snippet.thumbnails.medium
+          ? item.snippet.thumbnails.medium.url
+          : "";
+
+        var card = document.createElement("div");
+        card.className = "yt-card";
+
+        var thumbDiv = document.createElement("div");
+        thumbDiv.className = "yt-thumb";
+        thumbDiv.style.backgroundImage = "url('" + thumbUrl + "')";
+        card.appendChild(thumbDiv);
+
+        var bodyDiv = document.createElement("div");
+        bodyDiv.className = "yt-body";
+
+        var titleDiv = document.createElement("div");
+        titleDiv.className = "yt-title";
+        titleDiv.appendChild(document.createTextNode(title));
+        bodyDiv.appendChild(titleDiv);
+
+        var channelDiv = document.createElement("div");
+        channelDiv.className = "yt-channel";
+        channelDiv.appendChild(document.createTextNode(channel));
+        bodyDiv.appendChild(channelDiv);
+
+        card.appendChild(bodyDiv);
+
+        card.onclick = (function (vid) {
+          return function () {
+            setPlayerVideo(vid);
+          };
+        })(videoId);
+
+        ytResults.appendChild(card);
+      }
+    }
+
+    ytSearchBtn.onclick = function () {
+      var q = ytQueryInput.value;
+      searchYouTube(q);
+    };
+
+    ytQueryInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.keyCode === 13) {
+        e.preventDefault();
+        searchYouTube(ytQueryInput.value);
+      }
+    });
   </script>
 </body>
 </html>
-
